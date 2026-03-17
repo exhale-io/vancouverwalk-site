@@ -1,6 +1,6 @@
 mapboxgl.accessToken = config.mapboxToken;
 
-const ANIMATION_MS = 4000;
+const ANIMATION_MS = 3000;
 
 const map = new mapboxgl.Map({
   container: "map",
@@ -66,6 +66,7 @@ map.on("load", () => {
       );
       sorted.forEach((feature, index) => {
         feature.id = index;
+        feature.properties.order = index;
       });
 
       const totalKm = sorted.reduce((sum, f) => sum + (f.properties.distance_km || 0), 0);
@@ -76,13 +77,16 @@ map.on("load", () => {
 
       map.addSource("routes", {
         type: "geojson",
-        data: { type: "FeatureCollection", features: [] },
+        data: { type: "FeatureCollection", features: sorted },
       });
+
+      const FADE_STEPS = 8;
 
       map.addLayer({
         id: "routes",
         type: "line",
         source: "routes",
+        filter: ["<=", ["get", "order"], -1],
         layout: {
           "line-join": "round",
           "line-cap": "round",
@@ -117,13 +121,31 @@ map.on("load", () => {
         },
       });
 
-      const displayed = [];
-      let animIndex = 0;
-      const animTimer = setInterval(() => {
-        displayed.push(sorted[animIndex++]);
-        map.getSource("routes").setData({ type: "FeatureCollection", features: displayed });
-        if (animIndex >= sorted.length) clearInterval(animTimer);
-      }, ANIMATION_MS / sorted.length);
+      const animStart = performance.now();
+      function animate(now) {
+        const progress = ((now - animStart) / ANIMATION_MS) * sorted.length;
+
+        map.setFilter("routes", ["<=", ["get", "order"], progress]);
+        map.setPaintProperty("routes", "line-opacity", [
+          "case",
+          ["boolean", ["feature-state", "hover"], false],
+          0.7,
+          ["<", ["get", "order"], progress - FADE_STEPS],
+          0.7,
+          ["interpolate", ["linear"],
+            ["-", progress, ["get", "order"]],
+            0, 0,
+            FADE_STEPS, 0.7,
+          ],
+        ]);
+
+        if (progress < sorted.length + FADE_STEPS) {
+          requestAnimationFrame(animate);
+        } else {
+          map.setFilter("routes", null);
+        }
+      }
+      requestAnimationFrame(animate);
 
       let hoveredRouteId = null;
 
