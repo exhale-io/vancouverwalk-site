@@ -107,6 +107,101 @@ window.addEventListener("click", (event) => {
   if (event.target === modal) closeModal();
 });
 
+let stepsChart = null;
+let statsRendered = false;
+
+function animateCounter(el, target, duration) {
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(eased * target).toLocaleString();
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderStats(features) {
+  if (statsRendered) {
+    animateCounter(document.getElementById("hours-number"), totalHours, 2000);
+    return;
+  }
+  statsRendered = true;
+
+  const sorted = [...features].sort((a, b) =>
+    a.properties.date.localeCompare(b.properties.date),
+  );
+
+  let cumSteps = 0;
+  const labels = [];
+  const data = [];
+  let totalH = 0;
+  sorted.forEach((f) => {
+    cumSteps += Math.round((f.properties.distance_km * 1000) / 0.762);
+    totalH += f.properties.duration_hours || 0;
+    labels.push(f.properties.date);
+    data.push(cumSteps);
+  });
+
+  totalHours = Math.round(totalH);
+  const millions = (cumSteps / 1_000_000).toFixed(1);
+  document.getElementById("steps-title").textContent =
+    `${millions} Million Footprints Left Behind`;
+
+  const ctx = document.getElementById("steps-chart").getContext("2d");
+  stepsChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          data,
+          fill: true,
+          backgroundColor: "rgba(252, 76, 2, 0.25)",
+          borderColor: "#FC4C02",
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          type: "category",
+          ticks: {
+            autoSkip: true,
+            maxRotation: 0,
+            callback: function (val, i) {
+              const year = labels[i].slice(0, 4);
+              if (i === 0 || labels[i - 1].slice(0, 4) !== year) return year;
+              return null;
+            },
+            font: { family: "Raleway", size: 11 },
+          },
+          grid: { display: false },
+        },
+        y: {
+          ticks: {
+            callback: (v) => (v / 1_000_000).toFixed(1) + "M",
+            font: { family: "Raleway", size: 11 },
+          },
+          grid: { color: "rgba(0,0,0,0.06)" },
+        },
+      },
+      animation: { duration: 800, easing: "easeOutQuart" },
+    },
+  });
+
+  animateCounter(document.getElementById("hours-number"), totalHours, 2000);
+}
+
+let totalHours = 0;
+let allFeatures = [];
+
 modalBody.addEventListener("click", () => {
   if (aboutPage1.style.display === "none") {
     aboutPage1.style.display = "block";
@@ -114,6 +209,7 @@ modalBody.addEventListener("click", () => {
   } else {
     aboutPage1.style.display = "none";
     aboutPage2.style.display = "block";
+    if (allFeatures.length) renderStats(allFeatures);
   }
 });
 
@@ -155,6 +251,7 @@ map.on("load", () => {
 
       const defaultStats = computeStats(sorted);
       walkStats.textContent = defaultStats;
+      allFeatures = sorted;
 
       map.addSource("routes", {
         type: "geojson",

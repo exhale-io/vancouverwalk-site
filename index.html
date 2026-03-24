@@ -144,8 +144,6 @@
           <label>City</label>
           <div class="city-checkboxes" id="city-checkboxes"></div>
         </div>
-      </div>
-      <div class="filter-footer">
         <button id="filter-clear" class="filter-btn-clear">
           Clear Filters
         </button>
@@ -180,17 +178,26 @@
           </div>
           <!-- Page 2 Content -->
           <div id="about-page-2" style="display: none">
-            <div class="flourish-embed" data-src="story/2625322"></div>
+            <div class="stats-page">
+              <h3 class="stats-title" id="steps-title"></h3>
+              <canvas id="steps-chart"></canvas>
+              <div class="stats-hours">
+                <span class="stats-hours-number" id="hours-number">0</span>
+                <span class="stats-hours-label"
+                  >hours<br />of conversation.</span
+                >
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="version">v1.0.0</div>
+    <div class="version">v1.1.0</div>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.19.0/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/app.js"></script>
-    <script src="https://public.flourish.studio/resources/embed.js"></script>
   </body>
 </html>
