@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -69,6 +69,7 @@
       <div id="route-name"></div>
       <div class="about-link">
         <span id="walk-stats"></span>
+        <a href="#" id="filter-link"><i class="fas fa-filter"></i></a>
         <a href="#" id="about-link"><i class="fas fa-info-circle"></i></a>
       </div>
     </div>
@@ -76,6 +77,80 @@
     <main role="main">
       <div id="map"></div>
     </main>
+
+    <div id="no-results" class="no-results">
+      <p>No results found.</p>
+      <p>
+        To see more results, try adjusting your filters or clear all filters.
+      </p>
+    </div>
+
+    <div id="filter-panel" class="filter-panel">
+      <div class="filter-header">
+        <h3>Filters</h3>
+      </div>
+      <div class="filter-body">
+        <div class="filter-section">
+          <label>Year</label>
+          <div class="slider-label">
+            <span id="year-label-min">2023</span>
+            <span id="year-label-max">2026</span>
+          </div>
+          <div class="dual-slider">
+            <input
+              type="range"
+              id="year-range-min"
+              min="2023"
+              max="2026"
+              value="2023"
+              step="0.01"
+            />
+            <input
+              type="range"
+              id="year-range-max"
+              min="2023"
+              max="2026"
+              value="2026"
+              step="0.01"
+            />
+          </div>
+        </div>
+        <div class="filter-section">
+          <label>Distance</label>
+          <div class="slider-label">
+            <span id="dist-label-min">5 km</span>
+            <span id="dist-label-max">30 km</span>
+          </div>
+          <div class="dual-slider">
+            <input
+              type="range"
+              id="dist-range-min"
+              min="5"
+              max="30"
+              value="5"
+              step="1"
+            />
+            <input
+              type="range"
+              id="dist-range-max"
+              min="5"
+              max="30"
+              value="30"
+              step="1"
+            />
+          </div>
+        </div>
+        <div class="filter-section">
+          <label>City</label>
+          <div class="city-checkboxes" id="city-checkboxes"></div>
+        </div>
+      </div>
+      <div class="filter-footer">
+        <button id="filter-clear" class="filter-btn-clear">
+          Clear Filters
+        </button>
+      </div>
+    </div>
 
     <div id="about-modal" class="modal">
       <div class="modal-content">
@@ -92,9 +167,9 @@
               weaves through neighborhoods, parks, streets and trails.
             </p>
             <p>
-              It has been over three years and we're still at it! Why? Because we
-              love getting outside, having long chats and finding
-              local gems like eateries and scenic viewpoints!
+              It has been over three years and we're still at it! Why? Because
+              we love getting outside, having long chats and finding local gems
+              like eateries and scenic viewpoints!
             </p>
             <p>
               Check out our journey, and maybe find inspiration to explore your
@@ -105,11 +180,13 @@
           </div>
           <!-- Page 2 Content -->
           <div id="about-page-2" style="display: none">
-            <div class="flourish-embed" data-src="story/2625322" />
+            <div class="flourish-embed" data-src="story/2625322"></div>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="version">v1.0.0</div>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.19.0/mapbox-gl.js"></script>
     <script src="js/config.js"></script>

@@ -2,6 +2,7 @@
 
 :root {
   --primary-color: #fc4c02;
+  --primary-light: #ffd6b3;
   --secondary-color: #f7fff7;
   --text-color: #2c2c2c;
   --bg-color: #ffffff;
@@ -35,8 +36,7 @@ body.modal-open {
 .header-container {
   display: flex;
   align-items: center;
-  background: var(--primary-color)
-    url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.25'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='13' cy='13' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  background: var(--primary-color);
   color: var(--secondary-color);
   padding: 2px 12px;
   font-weight: 600;
@@ -72,7 +72,11 @@ body.modal-open {
 
 .logo a:hover,
 .about-link a:hover {
-  color: var(--accent-color);
+  color: var(--primary-light);
+}
+
+.about-link a.active {
+  color: var(--primary-light);
 }
 
 main {
@@ -134,8 +138,185 @@ main {
 }
 
 .close {
-  font: bold 36px/1 Arial, sans-serif;
+  font:
+    bold 36px/1 Arial,
+    sans-serif;
   cursor: pointer;
+}
+
+/* Filter Panel */
+.filter-panel {
+  position: fixed;
+  top: var(--header-height, 34px);
+  right: -220px;
+  width: 220px;
+  height: calc(100% - var(--header-height, 34px));
+  background: var(--bg-color);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease;
+}
+
+.filter-panel.open {
+  right: 0;
+}
+
+.filter-header {
+  background: var(--primary-color);
+  color: white;
+  padding: 8px 16px;
+}
+
+.filter-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.filter-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-section > label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.dual-slider {
+  position: relative;
+  height: 24px;
+}
+
+.dual-slider input[type="range"] {
+  position: absolute;
+  width: 100%;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  top: 0;
+  margin: 0;
+}
+
+.dual-slider input[type="range"]:first-child {
+  z-index: 2;
+}
+
+.dual-slider input[type="range"]::-webkit-slider-thumb {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+  pointer-events: auto;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+.dual-slider input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+}
+
+.dual-slider input[type="range"]:first-child::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+.city-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.city-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.city-checkboxes input[type="checkbox"] {
+  accent-color: var(--primary-color);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.filter-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+}
+
+.filter-btn-clear {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: #eee;
+  color: var(--text-color);
+}
+
+.filter-btn-clear:hover {
+  opacity: 0.85;
+}
+
+.no-results {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 24px 32px;
+  border-radius: 12px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.no-results.show {
+  display: block;
+}
+
+/* Version label */
+.version {
+  position: fixed;
+  bottom: 20px;
+  right: 16px;
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.4);
+  z-index: 50;
+  pointer-events: none;
 }
 
 @media (max-width: 768px) {
@@ -163,5 +344,14 @@ main {
 
   .modal-content {
     width: 95%;
+  }
+
+  .filter-panel {
+    width: 200px;
+    right: -200px;
+  }
+
+  .filter-body {
+    padding: 12px;
   }
 }
